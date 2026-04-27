@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle, ArrowRight, Shield } from 'lucide-react';
+import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle, ArrowRight, Shield, LockKeyhole, ShieldCheck, Zap } from 'lucide-react';
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -48,8 +48,7 @@ export default function RegisterPage() {
     try {
       // TODO: Remplacer par l'appel API réel
       // const response = await apiClient.post('/auth/register', formData);
-      
-      // Simulation pour hackathon
+     
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Registration attempt:', formData);
       
@@ -67,18 +66,15 @@ export default function RegisterPage() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
     
-    // Clear submit error when user makes changes
     if (submitError) {
       setSubmitError('');
     }
   };
 
-  // Simplifié pour hackathon - juste vérification longueur
   const isPasswordStrong = formData.password.length >= 8;
   const strengthLabel = isPasswordStrong ? 'Sécurisé' : 'Trop court';
   const strengthColor = isPasswordStrong ? '#00843D' : '#FC3D32';
@@ -142,7 +138,7 @@ export default function RegisterPage() {
 
           {/* Bottom quote */}
           <div className="mt-12 pt-8 border-t border-white/10">
-            <p className="text-white/50 text-xs">&copy; {new Date().getFullYear()} Fidio. Tous droits réservés.</p>
+            <p className="text-white/50 text-xs">&copy; 2026 Fidio. Tous droits réservés.</p>
           </div>
         </div>
       </div>
@@ -173,7 +169,6 @@ export default function RegisterPage() {
           {/* Card */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden">
             {/* Top accent */}
-            {/* <div className="h-0.5 bg-gradient-to-r from-[#00843D] via-[#00843D] to-[#FC3D32]" /> */}
 
             <form onSubmit={handleSubmit} className="space-y-5 p-7">
 
@@ -282,12 +277,23 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 onClick={handleSubmit}
+                disabled={isLoading}
                 className="w-full bg-[#00843D] text-white py-3 px-5 rounded-lg font-semibold text-sm
                            hover:bg-[#007034] active:scale-[0.98] transition-all duration-150
-                           flex items-center justify-center gap-2 shadow-sm shadow-[#00843D]/20 mt-2"
+                           flex items-center justify-center gap-2 shadow-sm shadow-[#00843D]/20 mt-2
+                           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
               >
-                Créer mon compte
-                <ArrowRight className="w-4 h-4" />
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Création en cours...
+                  </>
+                ) : (
+                  <>
+                    Créer mon compte
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
 
               {/* Divider */}
@@ -316,12 +322,12 @@ export default function RegisterPage() {
           {/* Trust badges */}
           <div className="flex items-center justify-center gap-6 mt-8">
             {[
-              { icon: '🔒', label: 'Chiffré SSL' },
-              { icon: '🛡️', label: 'RGPD conforme' },
-              { icon: '⚡', label: 'Accès immédiat' },
+              { icon: <LockKeyhole className="w-4 h-4" />, label: 'Chiffré SSL' },
+              { icon: <ShieldCheck className="w-4 h-4" />, label: 'RGPD conforme' },
+              { icon: <Zap className="w-4 h-4" />, label: 'Accès immédiat' },
             ].map((b, i) => (
               <div key={i} className="flex items-center gap-1.5">
-                <span className="text-sm">{b.icon}</span>
+                <span className="text-[#00843D]">{b.icon}</span>
                 <span className="text-xs text-gray-400">{b.label}</span>
               </div>
             ))}
@@ -354,7 +360,7 @@ function Field({
       </label>
       <div className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border transition-colors
         ${error
-          ? 'border-[#FC3D32] bg-[#FC3D32]/[0.03]'
+          ? 'border-[#FC3D32] bg-[#FC3D32]/3'
           : 'border-gray-200 bg-gray-50/50 focus-within:border-[#00843D] focus-within:bg-white'
         }`}
       >
