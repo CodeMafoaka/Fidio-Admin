@@ -1,3 +1,4 @@
+"use client"
 import { createContext, useState, ReactNode, useContext } from "react";
 
 interface AuthContextType {
@@ -10,8 +11,12 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const UseProvider = ({ children }: { children: ReactNode }) => {
-    const [token, setToken] = useState(localStorage.getItem("token") || "");
-    const [username, setUsername] = useState(localStorage.getItem("username") || "");
+    const [token, setToken] = useState(() =>
+        typeof window !== "undefined" ? localStorage.getItem("token") ?? "" : ""
+    );
+    const [username, setUsername] = useState(() =>
+        typeof window !== "undefined" ? localStorage.getItem("username") ?? "" : ""
+    );
 
     const loginUser = (username: string, token: string) => {
         localStorage.setItem("username", username);
@@ -26,7 +31,7 @@ export const UseProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ loginUser, authUser ,token, username }}>
+        <AuthContext.Provider value={{ loginUser, authUser, token, username }}>
             {children}
         </AuthContext.Provider>
     );
