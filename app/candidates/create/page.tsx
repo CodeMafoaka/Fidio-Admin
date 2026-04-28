@@ -118,21 +118,23 @@ export default function CreateCandidatePage() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }} className="min-h-screen flex bg-[#f5f5f5]">
-      <div
-        className="flex-1 flex items-center justify-center px-4 py-10 sm:px-8 relative"
-        style={{
-          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
-                            radial-gradient(circle at 80% 80%, rgba(0,0,0,0.12) 0%, transparent 50%)`,
-          backgroundColor: "rgba(0, 132, 61, 0.18)",
-        }}
-      >
-        {/* Decorative circles (mirrored from left panel) */}
-        <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full border border-[#00843D]/20 pointer-events-none" />
-        <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full border border-[#00843D]/20 pointer-events-none" />
-        <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full border border-[#00843D]/20 pointer-events-none" />
+    <div
+      style={{
+        fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
+        backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
+                          radial-gradient(circle at 80% 80%, rgba(0,0,0,0.12) 0%, transparent 50%)`,
+        backgroundColor: "rgba(0, 132, 61, 0.15)",
+      }}
+      className="w-full relative"
+    >
+      {/* Decorative circles */}
+      <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full border border-[#00843D]/20 pointer-events-none" />
+      <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full border border-[#00843D]/20 pointer-events-none" />
+      <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full border border-[#00843D]/20 pointer-events-none" />
 
-        <div className="w-full max-w-[500px] relative z-10">
+      {/* Content */}
+      <div className="relative z-10 flex justify-center px-4 py-10 sm:px-8">
+        <div className="w-full max-w-[500px]">
 
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center gap-3 mb-8 justify-center">
@@ -159,7 +161,7 @@ export default function CreateCandidatePage() {
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden mb-6">
             {/* Top accent */}
             <div className="h-0.5 bg-gradient-to-r from-[#00843D] via-[#00843D] to-[#FC3D32]" />
 
@@ -333,6 +335,7 @@ export default function CreateCandidatePage() {
               </form>
             </div>
           </div>
+
         </div>
       </div>
     </div>

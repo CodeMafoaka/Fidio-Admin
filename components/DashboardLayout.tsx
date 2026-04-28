@@ -1,20 +1,18 @@
 "use client"
 import { useRouter, usePathname } from "next/navigation"
 import { AuthUseProvider } from "../app/Context/Auth"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 
 const navItems = [
-    { label: "Dashboard", href: "/dashboard" },
-    { label: "Profil", href: "/profile" },
-    { label: "Liste des élections", href: "/elections" },
-    { label: "Liste des candidats", href: "/candidates" },
-    { label: "Monitoring", href: "/monitoring" },
-    { label: "Paramètres", href: "/settings" },
+    { label: "Dashboard",          href: "/dashboard",  section: "principal" },
+    { label: "Profil",             href: "/profile",    section: "principal" },
+    { label: "Monitoring",         href: "/monitoring", section: "elections" },
+    { label: "Paramètres",         href: "/settings",   section: "systeme"   },
 ]
 
 const listItems = [
-    { label: "Élections", href: "/elections" },
-    { label: "Candidats", href: "/candidates" },
+    { label: "Élections",  href: "/elections"  },
+    { label: "Candidats",  href: "/candidates" },
 ]
 
 interface DashboardLayoutProps {
@@ -22,17 +20,57 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-    const { username } = AuthUseProvider()
-    const router = useRouter()
+    const { username, logout } = AuthUseProvider()
+    const router   = useRouter()
     const pathname = usePathname()
 
-    const [listOpen, setListOpen] = useState(false)
-    const [avatarOpen, setAvatarOpen] = useState(false)       // ← nouveau
-    const [confirmLogout, setConfirmLogout] = useState(false) // ← nouveau
+    const [listOpen,      setListOpen]      = useState(false)
+    const [avatarOpen,    setAvatarOpen]    = useState(false)
+    const [confirmLogout, setConfirmLogout] = useState(false)
+
+    // Ref to detect clicks outside the avatar dropdown
+    const avatarRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (!avatarOpen) return
+
+        function handleClickOutside(e: MouseEvent) {
+            if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+                setAvatarOpen(false)
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [avatarOpen])
+
+    function handleLogoutConfirm(e: React.MouseEvent) {
+        e.stopPropagation()
+        setConfirmLogout(false)
+        // Call logout from auth context if available, then redirect
+        if (typeof logout === "function") logout()
+        router.push("/login")
+    }
+
+    function handleLogoutCancel(e: React.MouseEvent) {
+        e.stopPropagation()
+        setConfirmLogout(false)
+    }
+
+    const principalItems = navItems.filter(i => i.section === "principal")
+    const electionItems  = navItems.filter(i => i.section === "elections")
+    const systemeItems   = navItems.filter(i => i.section === "systeme")
+
+    const initials = username?.slice(0, 2).toUpperCase() ?? "AD"
+    const isListActive = pathname.startsWith("/elections") || pathname.startsWith("/candidates")
 
     return (
         <div className="flex flex-col h-screen bg-gray-50">
-            <nav className="h-13 bg-[#F9423A] flex items-center justify-between px-5 shrink-0">
+
+            {/* ── Top nav ── */}
+            <nav className="h-[52px] bg-[#F9423A] flex items-center justify-between px-5 flex-shrink-0 relative z-40">
+                {/* Logo */}
+
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-0.5">
                         <div className="w-1 h-5 bg-white rounded-sm" />
@@ -46,34 +84,43 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         <p className="text-white/60 text-[10px] leading-none">Plateforme électorale</p>
                     </div>
                 </div>
+
+                {/* Right side */}
                 <div className="flex items-center gap-3">
                     <span className="flex items-center gap-1.5 text-white/80 text-xs">
                         <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                         Direct actif
                     </span>
 
-                    {/* Avatar avec dropdown — modifié ici uniquement */}
+                    {/* Avatar with dropdown */}
                     <div
+                        ref={avatarRef}
                         className="relative"
-                        onClick={() => setAvatarOpen(!avatarOpen)}
                     >
-                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-medium cursor-pointer">
-                            {username?.slice(0, 2).toUpperCase() ?? "AD"}
-                        </div>
+                        <button
+                            onClick={() => setAvatarOpen(prev => !prev)}
+                            className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-medium cursor-pointer hover:bg-white/30 transition-colors focus:outline-none"
+                            aria-label="Menu utilisateur"
+                        >
+                            {initials}
+                        </button>
 
                         {avatarOpen && (
-                            
-                            <div className="fixed right-100 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg z-50 ">
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg z-50">
                                 <div className="px-4 py-3 border-b border-gray-100">
                                     <div className="w-8 h-8 rounded-full bg-[#F9423A] flex items-center justify-center text-white text-xs font-medium mb-2">
-                                        {username?.slice(0, 2).toUpperCase() ?? "AD"}
+                                        {initials}
                                     </div>
                                     <p className="text-sm font-medium text-gray-800">{username ?? "Administrateur"}</p>
                                     <p className="text-[11px] text-gray-400">Super Admin</p>
                                 </div>
                                 <div className="px-3 py-2">
                                     <button
-                                        onClick={() => { setAvatarOpen(false); setConfirmLogout(true) }}
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            setAvatarOpen(false)
+                                            setConfirmLogout(true)
+                                        }}
                                         className="w-full text-left text-sm text-[#F9423A] px-2 py-1.5 rounded hover:bg-red-50 transition-colors"
                                     >
                                         Déconnexion
@@ -85,38 +132,31 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </div>
             </nav>
 
-            {/* Modal confirmation déconnexion — design personnalisé */}
+            {/* ── Logout confirmation modal ── */}
             {confirmLogout && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in">
-                    <div className="bg-white rounded-2xl shadow-2xl p-8 w-96 transform transition-all duration-300 scale-100 hover:scale-[1.02]">
-                        {/* Icône et titre */}
-                        <div className="flex flex-col items-center text-center mb-6">
-                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="w-8 h-8 text-[#F9423A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">Déconnexion</h3>
-                            <p className="text-sm text-gray-600 leading-relaxed">
-                                Êtes-vous sûr de vouloir vous déconnecter ?<br />
-                                Vous devrez vous reconnecter pour accéder à votre compte.
-                            </p>
-                        </div>
-                        
-                        {/* Boutons d'action */}
-                        <div className="flex gap-3">
+                <div
+                    className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center"
+                    onClick={handleLogoutCancel}   // click backdrop → cancel
+                >
+                    <div
+                        className="bg-white rounded-xl shadow-xl p-6 w-80"
+                        onClick={e => e.stopPropagation()}  // prevent backdrop click from firing
+                    >
+                        <p className="text-sm font-medium text-gray-800 mb-1">Déconnexion</p>
+                        <p className="text-xs text-gray-400 mb-5">Voulez-vous vraiment vous déconnecter ?</p>
+                        <div className="flex gap-2 justify-end">
                             <button
-                                onClick={() => setConfirmLogout(false)}
-                                className="flex-1 px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 transform hover:scale-[1.02]"
+                                onClick={handleLogoutCancel}
+                                className="text-xs px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+
                             >
                                 Annuler
                             </button>
                             <button
-                                onClick={() => {
-                                    setConfirmLogout(false)
-                                    router.push("/login")
-                                }}
-                                className="flex-1 px-6 py-3 bg-gradient-to-r from-[#F9423A] to-red-600 text-white rounded-xl font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+
+                                onClick={handleLogoutConfirm}
+                                className="text-xs px-4 py-2 bg-[#F9423A] text-white rounded-lg hover:bg-red-600 transition-colors"
+
                             >
                                 Se déconnecter
                             </button>
@@ -125,35 +165,48 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </div>
             )}
 
+            {/* ── Body ── */}
             <div className="flex flex-1 overflow-hidden">
-                <aside className="w-50 bg-white border-r border-gray-100 shrink-0 overflow-y-auto">
+
+                {/* Sidebar */}
+                <aside className="w-[200px] bg-white border-r border-gray-100 flex-shrink-0 overflow-y-auto">
+
                     <div className="pt-3">
+                        {/* Principal */}
                         <p className="px-4 pb-1 text-[10px] font-medium text-gray-400 uppercase tracking-wide">Principal</p>
-                        {navItems.slice(0, 2).map(item => (
-                            <div key={item.href}
+                        {principalItems.map(item => (
+                            <div
+                                key={item.href}
                                 onClick={() => router.push(item.href)}
                                 className={`flex items-center px-4 py-2.5 text-sm cursor-pointer border-l-2 transition-colors
                                     ${pathname === item.href
                                         ? "border-[#00843D] text-[#00843D] bg-green-50"
-                                        : "border-transparent text-gray-500 hover:bg-gray-50"}`}>
+                                        : "border-transparent text-gray-500 hover:bg-gray-50"}`}
+                            >
                                 {item.label}
                             </div>
                         ))}
+
+                        {/* Élections */}
                         <p className="px-4 pt-3 pb-1 text-[10px] font-medium text-gray-400 uppercase tracking-wide">Élections</p>
+
+                        {/* Listes sub-menu (hover) */}
                         <div
                             className="relative"
                             onMouseEnter={() => setListOpen(true)}
                             onMouseLeave={() => setListOpen(false)}
                         >
                             <div className={`flex items-center justify-between px-4 py-2.5 text-sm cursor-default border-l-2 transition-colors
-                                ${pathname.startsWith("/elections") || pathname.startsWith("/candidates")
+                                ${isListActive
                                     ? "border-[#00843D] text-[#00843D] bg-green-50"
-                                    : "border-transparent text-gray-500 hover:bg-gray-50"}`}>
+                                    : "border-transparent text-gray-500 hover:bg-gray-50"}`}
+                            >
                                 <span>Listes</span>
                                 <span className="text-[10px] text-gray-400">›</span>
                             </div>
+
                             {listOpen && (
-                                <div className="absolute left-full top-0 ml-1 w-44 bg-white border border-gray-100 rounded-lg shadow-md z-50 overflow-hidden">
+                                <div className="absolute left-5 top-10 ml-1 w-44 bg-white border border-gray-100 rounded-lg shadow-md z-50 overflow-hidden">
                                     {listItems.map(item => (
                                         <div
                                             key={item.href}
@@ -169,24 +222,32 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 </div>
                             )}
                         </div>
-                        {navItems.slice(4, 5).map(item => (
-                            <div key={item.href}
+
+                        {/* Monitoring */}
+                        {electionItems.map(item => (
+                            <div
+                                key={item.href}
                                 onClick={() => router.push(item.href)}
                                 className={`flex items-center px-4 py-2.5 text-sm cursor-pointer border-l-2 transition-colors
                                     ${pathname === item.href
                                         ? "border-[#00843D] text-[#00843D] bg-green-50"
-                                        : "border-transparent text-gray-500 hover:bg-gray-50"}`}>
+                                        : "border-transparent text-gray-500 hover:bg-gray-50"}`}
+                            >
                                 {item.label}
                             </div>
                         ))}
+
+                        {/* Système */}
                         <p className="px-4 pt-3 pb-1 text-[10px] font-medium text-gray-400 uppercase tracking-wide">Système</p>
-                        {navItems.slice(5).map(item => (
-                            <div key={item.href}
+                        {systemeItems.map(item => (
+                            <div
+                                key={item.href}
                                 onClick={() => router.push(item.href)}
                                 className={`flex items-center px-4 py-2.5 text-sm cursor-pointer border-l-2 transition-colors
                                     ${pathname === item.href
                                         ? "border-[#00843D] text-[#00843D] bg-green-50"
-                                        : "border-transparent text-gray-500 hover:bg-gray-50"}`}>
+                                        : "border-transparent text-gray-500 hover:bg-gray-50"}`}
+                            >
                                 {item.label}
                             </div>
                         ))}
@@ -201,6 +262,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         </div>
                     </div>
                 </aside>
+
+                {/* Main content */}
                 <main className="flex-1 overflow-y-auto">
                     {children}
                 </main>
