@@ -87,7 +87,7 @@ export const citizenService = {
 
   async getByGid(gid: string): Promise<Citizen | null> {
     console.log("🔍 CITIZEN: Get by GID", { gid });
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(`${API_BASE_URL}/citizens?gid=${gid}`, {

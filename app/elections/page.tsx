@@ -11,7 +11,6 @@ import ElectionModal from "@/app/elections/modal";
 import PageHeader from "@/components/layout/PageHeader";
 import { electionService } from "@/lib/api/election";
 
-// ─── Filter bar ───────────────────────────────────────────────────────────────
 
 const STATUS_FILTERS: { value: ElectionStatus | "all"; label: string }[] = [
   { value: "all", label: "Toutes" },
@@ -20,7 +19,6 @@ const STATUS_FILTERS: { value: ElectionStatus | "all"; label: string }[] = [
   { value: "completed", label: "Terminées" },
 ];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ElectionsPage() {
   const router = useRouter();
@@ -94,7 +92,6 @@ export default function ElectionsPage() {
   const handleCreate = async (data: { title: string; startAt: string; endAt: string; candidates: ElectionCandidate[] }) => {
     try {
       const newElection = await electionService.create(data);
-      // Convert API election to local format
       const formattedElection = {
         id: newElection.id,
         title: newElection.title,
@@ -162,7 +159,7 @@ export default function ElectionsPage() {
               placeholder="Rechercher une élection…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#00843D] focus:ring-2 focus:ring-[#00843D]/10 transition-all"
+              className="w-full pl-9 pr-4 py-2 text-sm border border-slate-700 rounded-xl bg-white focus:outline-none focus:border-[#00843D] focus:ring-2 focus:ring-[#00843D]/10 transition-all"
             />
           </div>
 
@@ -176,7 +173,7 @@ export default function ElectionsPage() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   statusFilter === f.value
                     ? "bg-[#00843D] text-white"
-                    : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                    : "bg-white border border-slate-700 text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 {f.label}
