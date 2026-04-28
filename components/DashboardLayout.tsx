@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
     return (
         <div className="flex flex-col h-screen bg-gray-50">
-            <nav className="h-[52px] bg-[#F9423A] flex items-center justify-between px-5 flex-shrink-0">
+            <nav className="h-13 bg-[#F9423A] flex items-center justify-between px-5 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-0.5">
                         <div className="w-1 h-5 bg-white rounded-sm" />
@@ -85,27 +85,40 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </div>
             </nav>
 
-            {/* Modal confirmation déconnexion — nouveau */}
+            {/* Modal confirmation déconnexion — design personnalisé */}
             {confirmLogout && (
-                <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
-                    <div className="bg-white rounded-xl shadow-xl p-6 w-80">
-                        <p className="text-sm font-medium text-gray-800 mb-1">Déconnexion</p>
-                        <p className="text-xs text-gray-400 mb-5">Voulez-vous vraiment vous déconnecter ?</p>
-                        <div className="flex gap-2 justify-end">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in">
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 w-96 transform transition-all duration-300 scale-100 hover:scale-[1.02]">
+                        {/* Icône et titre */}
+                        <div className="flex flex-col items-center text-center mb-6">
+                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                                <svg className="w-8 h-8 text-[#F9423A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">Déconnexion</h3>
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                                Êtes-vous sûr de vouloir vous déconnecter ?<br />
+                                Vous devrez vous reconnecter pour accéder à votre compte.
+                            </p>
+                        </div>
+                        
+                        {/* Boutons d'action */}
+                        <div className="flex gap-3">
                             <button
                                 onClick={() => setConfirmLogout(false)}
-                                className="text-xs px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                                className="flex-1 px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 transform hover:scale-[1.02]"
                             >
                                 Annuler
                             </button>
                             <button
                                 onClick={() => {
                                     setConfirmLogout(false)
-                                    router.push("/login") // ← adaptez à votre route de logout
+                                    router.push("/login")
                                 }}
-                                className="text-xs px-4 py-2 bg-[#F9423A] text-white rounded-lg hover:bg-red-600 transition-colors"
+                                className="flex-1 px-6 py-3 bg-gradient-to-r from-[#F9423A] to-red-600 text-white rounded-xl font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
                             >
-                                Déconnecter
+                                Se déconnecter
                             </button>
                         </div>
                     </div>
@@ -113,7 +126,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             )}
 
             <div className="flex flex-1 overflow-hidden">
-                <aside className="w-[200px] bg-white border-r border-gray-100 flex-shrink-0 overflow-y-auto">
+                <aside className="w-50 bg-white border-r border-gray-100 shrink-0 overflow-y-auto">
                     <div className="pt-3">
                         <p className="px-4 pb-1 text-[10px] font-medium text-gray-400 uppercase tracking-wide">Principal</p>
                         {navItems.slice(0, 2).map(item => (
@@ -177,6 +190,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 {item.label}
                             </div>
                         ))}
+                        
+                        {/* Logout button */}
+                        <div className="pt-3 border-t border-gray-100 mt-3">
+                            <div
+                                onClick={() => setConfirmLogout(true)}
+                                className="flex items-center px-4 py-2.5 text-sm cursor-pointer border-l-2 transition-colors border-transparent text-red-600 hover:bg-red-50 hover:text-red-700">
+                                Déconnexion
+                            </div>
+                        </div>
                     </div>
                 </aside>
                 <main className="flex-1 overflow-y-auto">
