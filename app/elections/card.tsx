@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   Calendar,
   Users,
@@ -38,7 +37,6 @@ export default function ElectionCard({
 }: ElectionCardProps) {
   return (
     <article className="bg-white rounded-2xl border border-slate-400 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 overflow-hidden group">
-      {/* Top accent by status */}
       <div
         className={cn(
           "h-0.5 w-full",

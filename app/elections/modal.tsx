@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Vote, Calendar, AlertTriangle, Users, Plus } from "lucide-react";
+import { X, Vote, Calendar, AlertTriangle, Users } from "lucide-react";
 import { Field, fieldInputClass, Button } from "@/components/ui";
 import { citizenService } from "@/lib/api/citizen";
 import { Citizen, ElectionCandidate } from "@/types/api";
@@ -52,7 +52,7 @@ export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps)
     const fetchCitizens = async () => {
       setLoadingCitizens(true);
       try {
-        const citizensData = await citizenService.getAll();
+        const citizensData = await citizenService.getAll(cinInput);
         setCitizens(citizensData);
       } catch (error) {
         console.error("Failed to fetch citizens:", error);
@@ -248,7 +248,7 @@ export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps)
                 <div className="space-y-2 max-h-64 overflow-y-auto border border-slate-200 rounded-lg p-3">
                   {citizens.length === 0 ? (
                     <p className="text-sm text-slate-500 text-center py-4">
-                      Aucun citoyen disponible
+                      Aucun candidat selectione
                     </p>
                   ) : (
                     citizens.map((citizen) => {

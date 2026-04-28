@@ -11,7 +11,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const electionService = {
   async getAll(): Promise<Election[]> {
     console.log("🗳️ ELECTION: Get all elections");
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(`${API_BASE_URL}/elections`, {

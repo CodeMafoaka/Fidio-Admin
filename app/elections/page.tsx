@@ -11,7 +11,6 @@ import ElectionModal from "@/app/elections/modal";
 import PageHeader from "@/components/layout/PageHeader";
 import { electionService } from "@/lib/api/election";
 
-// ─── Filter bar ───────────────────────────────────────────────────────────────
 
 const STATUS_FILTERS: { value: ElectionStatus | "all"; label: string }[] = [
   { value: "all", label: "Toutes" },
@@ -20,7 +19,6 @@ const STATUS_FILTERS: { value: ElectionStatus | "all"; label: string }[] = [
   { value: "completed", label: "Terminées" },
 ];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ElectionsPage() {
   const router = useRouter();
@@ -94,7 +92,6 @@ export default function ElectionsPage() {
   const handleCreate = async (data: { title: string; startAt: string; endAt: string; candidates: ElectionCandidate[] }) => {
     try {
       const newElection = await electionService.create(data);
-      // Convert API election to local format
       const formattedElection = {
         id: newElection.id,
         title: newElection.title,
