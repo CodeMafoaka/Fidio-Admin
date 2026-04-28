@@ -36,51 +36,34 @@ export default function CreateCandidatePage() {
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
-    
-    if (!formData.firstName.trim()) {
-      errors.firstName = "Le prénom est requis";
-    }
-    
-    if (!formData.lastName.trim()) {
-      errors.lastName = "Le nom est requis";
-    }
-    
+    if (!formData.firstName.trim()) errors.firstName = "Le prénom est requis";
+    if (!formData.lastName.trim()) errors.lastName = "Le nom est requis";
     if (!formData.email.trim()) {
       errors.email = "L'email est requis";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = "Format d'email invalide";
     }
-    
     if (!formData.phone.trim()) {
       errors.phone = "Le numéro de téléphone est requis";
     } else if (!/^[+]?[\d\s-()]+$/.test(formData.phone)) {
       errors.phone = "Format de numéro de téléphone invalide";
     }
-    
     if (!formData.bio.trim()) {
       errors.bio = "La biographie est requise";
     } else if (formData.bio.trim().length < 50) {
       errors.bio = "La biographie doit contenir au moins 50 caractères";
     }
-    
-    if (!formData.electionId) {
-      errors.electionId = "L'élection est requise";
-    }
-    
+    if (!formData.electionId) errors.electionId = "L'élection est requise";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
     setIsSubmitting(true);
     try {
-      // Simuler une API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
       const newCandidate: Candidate = {
         id: Date.now().toString(),
         firstName: formData.firstName.trim(),
@@ -92,18 +75,12 @@ export default function CreateCandidatePage() {
         photo: photoPreview,
         status: "pending"
       };
-
       console.log("Nouveau candidat créé:", newCandidate);
-      
-      // Reset form
       setFormData({ firstName: "", lastName: "", email: "", phone: "", bio: "", electionId: "" });
       setFormErrors({});
       setPhotoFile(null);
       setPhotoPreview("");
-      
-      // Simuler redirection
       alert("Candidat créé avec succès!");
-      
     } catch {
       setFormErrors({ submit: "Une erreur est survenue lors de la création du candidat" });
     } finally {
@@ -113,10 +90,7 @@ export default function CreateCandidatePage() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData({...formData, [field]: value});
-    // Clear error when user starts typing
-    if (formErrors[field]) {
-      setFormErrors({...formErrors, [field]: ""});
-    }
+    if (formErrors[field]) setFormErrors({...formErrors, [field]: ""});
   };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,22 +100,15 @@ export default function CreateCandidatePage() {
         setFormErrors({...formErrors, photo: "La photo ne doit pas dépasser 5MB"});
         return;
       }
-      
       if (!file.type.startsWith('image/')) {
         setFormErrors({...formErrors, photo: "Le fichier doit être une image"});
         return;
       }
-      
       setPhotoFile(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-      };
+      reader.onloadend = () => setPhotoPreview(reader.result as string);
       reader.readAsDataURL(file);
-      
-      if (formErrors.photo) {
-        setFormErrors({...formErrors, photo: ""});
-      }
+      if (formErrors.photo) setFormErrors({...formErrors, photo: ""});
     }
   };
 
@@ -152,71 +119,20 @@ export default function CreateCandidatePage() {
 
   return (
     <div style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }} className="min-h-screen flex bg-[#f5f5f5]">
-      
-      {/* Left brand panel */}
-      <div className="hidden lg:flex lg:w-105 xl:w-120 shrink-0 flex-col bg-[#00843D] relative overflow-hidden">
-        {/* Subtle pattern */}
-        <div className="absolute inset-0" style={{
+      <div
+        className="flex-1 flex items-center justify-center px-4 py-10 sm:px-8 relative"
+        style={{
           backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
                             radial-gradient(circle at 80% 80%, rgba(0,0,0,0.12) 0%, transparent 50%)`,
-        }} />
-        {/* Decorative circles */}
-        <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full border border-white/10" />
-        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full border border-white/10" />
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full border border-white/10" />
+          backgroundColor: "rgba(0, 132, 61, 0.18)",
+        }}
+      >
+        {/* Decorative circles (mirrored from left panel) */}
+        <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full border border-[#00843D]/20 pointer-events-none" />
+        <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full border border-[#00843D]/20 pointer-events-none" />
+        <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full border border-[#00843D]/20 pointer-events-none" />
 
-        {/* Red accent stripe at top */}
-        <div className="h-1 w-full bg-[#FC3D32] relative z-10" />
-
-        <div className="relative z-10 flex flex-col h-full px-10 py-12">
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-16">
-            <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-md">
-              <Shield className="w-5 h-5 text-[#00843D]" />
-            </div>
-            <span className="text-white font-bold text-xl tracking-tight">Fidio Admin</span>
-          </div>
-
-          {/* Main copy */}
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="w-10 h-1 bg-[#FC3D32] rounded mb-6" />
-            <h2 className="text-white text-3xl xl:text-4xl font-bold leading-tight mb-5">
-              Création de Candidat
-            </h2>
-            <p className="text-white/70 text-base leading-relaxed mb-12">
-              Ajoutez de nouveaux candidats aux processus électoraux avec une gestion complète des informations.
-            </p>
-
-            {/* Feature list */}
-            <div className="space-y-5">
-              {[
-                { label: 'Informations complètes', sub: 'Gestion des profils détaillés' },
-                { label: 'Photos et documents', sub: 'Support multimédia intégré' },
-                { label: 'Validation rapide', sub: 'Workflow d\'approbation simplifié' },
-              ].map((f, i) => (
-                <div key={i} className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Plus className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">{f.label}</p>
-                    <p className="text-white/50 text-xs mt-0.5">{f.sub}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom quote */}
-          <div className="mt-12 pt-8 border-t border-white/10">
-            <p className="text-white/50 text-xs">&copy; {new Date().getFullYear()} Fidio. Tous droits réservés.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right: form panel */}
-      <div className="flex-1 flex items-center justify-center px-4 py-10 sm:px-8">
-        <div className="w-full max-w-[500px]">
+        <div className="w-full max-w-[500px] relative z-10">
 
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center gap-3 mb-8 justify-center">
@@ -229,7 +145,7 @@ export default function CreateCandidatePage() {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <button 
+              <button
                 className="text-gray-500 hover:text-gray-700 transition-colors"
                 onClick={() => window.history.back()}
               >
@@ -263,9 +179,9 @@ export default function CreateCandidatePage() {
                   <div className="flex items-center gap-4">
                     {photoPreview ? (
                       <div className="relative">
-                        <img 
-                          src={photoPreview} 
-                          alt="Preview" 
+                        <img
+                          src={photoPreview}
+                          alt="Preview"
                           className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
                         />
                         <button
@@ -278,30 +194,18 @@ export default function CreateCandidatePage() {
                       </div>
                     ) : (
                       <label className="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-[#00843D] transition-colors">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handlePhotoChange}
-                          className="hidden"
-                        />
+                        <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
                         <Upload className="w-6 h-6 text-gray-400" />
                       </label>
                     )}
                     <div className="flex-1">
                       <label className="cursor-pointer">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handlePhotoChange}
-                          className="hidden"
-                        />
+                        <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
                         <span className="text-sm text-[#00843D] font-medium hover:underline">
                           {photoPreview ? "Changer la photo" : "Télécharger une photo"}
                         </span>
                       </label>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Formats: JPG, PNG (max 5MB)
-                      </p>
+                      <p className="text-xs text-gray-500 mt-1">Formats: JPG, PNG (max 5MB)</p>
                     </div>
                   </div>
                   {formErrors.photo && (
@@ -314,11 +218,7 @@ export default function CreateCandidatePage() {
 
                 {/* Name Fields */}
                 <div className="grid grid-cols-2 gap-4">
-                  <Field
-                    label="Prénom"
-                    error={formErrors.firstName}
-                    icon={<User className="w-4 h-4" />}
-                  >
+                  <Field label="Prénom" error={formErrors.firstName} icon={<User className="w-4 h-4" />}>
                     <input
                       type="text"
                       name="firstName"
@@ -329,12 +229,7 @@ export default function CreateCandidatePage() {
                       disabled={isSubmitting}
                     />
                   </Field>
-
-                  <Field
-                    label="Nom"
-                    error={formErrors.lastName}
-                    icon={<User className="w-4 h-4" />}
-                  >
+                  <Field label="Nom" error={formErrors.lastName} icon={<User className="w-4 h-4" />}>
                     <input
                       type="text"
                       name="lastName"
@@ -348,11 +243,7 @@ export default function CreateCandidatePage() {
                 </div>
 
                 {/* Email */}
-                <Field
-                  label="Adresse email"
-                  error={formErrors.email}
-                  icon={<Mail className="w-4 h-4" />}
-                >
+                <Field label="Adresse email" error={formErrors.email} icon={<Mail className="w-4 h-4" />}>
                   <input
                     type="email"
                     name="email"
@@ -365,11 +256,7 @@ export default function CreateCandidatePage() {
                 </Field>
 
                 {/* Phone */}
-                <Field
-                  label="Numéro de téléphone"
-                  error={formErrors.phone}
-                  icon={<Phone className="w-4 h-4" />}
-                >
+                <Field label="Numéro de téléphone" error={formErrors.phone} icon={<Phone className="w-4 h-4" />}>
                   <input
                     type="tel"
                     name="phone"
@@ -382,11 +269,7 @@ export default function CreateCandidatePage() {
                 </Field>
 
                 {/* Election */}
-                <Field
-                  label="Élection concernée"
-                  error={formErrors.electionId}
-                  icon={<FileText className="w-4 h-4" />}
-                >
+                <Field label="Élection concernée" error={formErrors.electionId} icon={<FileText className="w-4 h-4" />}>
                   <select
                     name="electionId"
                     value={formData.electionId}
@@ -396,19 +279,13 @@ export default function CreateCandidatePage() {
                   >
                     <option value="">Sélectionner une élection</option>
                     {elections.map((election) => (
-                      <option key={election.id} value={election.id}>
-                        {election.title}
-                      </option>
+                      <option key={election.id} value={election.id}>{election.title}</option>
                     ))}
                   </select>
                 </Field>
 
                 {/* Bio */}
-                <Field
-                  label="Biographie"
-                  error={formErrors.bio}
-                  icon={<FileText className="w-4 h-4" />}
-                >
+                <Field label="Biographie" error={formErrors.bio} icon={<FileText className="w-4 h-4" />}>
                   <textarea
                     name="bio"
                     value={formData.bio}

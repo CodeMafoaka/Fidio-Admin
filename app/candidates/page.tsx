@@ -146,69 +146,6 @@ export default function CandidatesPage() {
 
   return (
     <div style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }} className="min-h-screen flex bg-[#f5f5f5]">
-      
-      {/* Left brand panel */}
-      <div className="hidden lg:flex lg:w-105 xl:w-120 shrink-0 flex-col bg-[#00843D] relative overflow-hidden">
-        {/* Subtle pattern */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
-                            radial-gradient(circle at 80% 80%, rgba(0,0,0,0.12) 0%, transparent 50%)`,
-        }} />
-        {/* Decorative circles */}
-        <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full border border-white/10" />
-        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full border border-white/10" />
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full border border-white/10" />
-
-        {/* Red accent stripe at top */}
-        <div className="h-1 w-full bg-[#FC3D32] relative z-10" />
-
-        <div className="relative z-10 flex flex-col h-full px-10 py-12">
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-16">
-            <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-md">
-              <Shield className="w-5 h-5 text-[#00843D]" />
-            </div>
-            <span className="text-white font-bold text-xl tracking-tight">Fidio Admin</span>
-          </div>
-
-          {/* Main copy */}
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="w-10 h-1 bg-[#FC3D32] rounded mb-6" />
-            <h2 className="text-white text-3xl xl:text-4xl font-bold leading-tight mb-5">
-              Gestion des Candidats
-            </h2>
-            <p className="text-white/70 text-base leading-relaxed mb-12">
-              Consultez et gérez tous les candidats inscrits aux processus électoraux.
-            </p>
-
-            {/* Feature list */}
-            <div className="space-y-5">
-              {[
-                { label: 'Liste complète', sub: 'Vue d\'ensemble de tous les candidats' },
-                { label: 'Filtres avancés', sub: 'Recherche et filtrage intelligents' },
-                { label: 'Gestion des statuts', sub: 'Validation et rejet rapides' },
-              ].map((f, i) => (
-                <div key={i} className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <Users className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">{f.label}</p>
-                    <p className="text-white/50 text-xs mt-0.5">{f.sub}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom quote */}
-          <div className="mt-12 pt-8 border-t border-white/10">
-            <p className="text-white/50 text-xs">&copy; {new Date().getFullYear()} Fidio. Tous droits réservés.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right: content panel */}
       <div className="flex-1 flex flex-col px-4 py-10 sm:px-8">
         <div className="w-full max-w-6xl mx-auto">
 
