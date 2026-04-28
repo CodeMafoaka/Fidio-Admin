@@ -20,7 +20,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-    const { username, logout } = AuthUseProvider()
+    const { logout , firstName , lastName , gid , token } = AuthUseProvider()
     const router   = useRouter()
     const pathname = usePathname()
 
@@ -28,7 +28,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const [avatarOpen,    setAvatarOpen]    = useState(false)
     const [confirmLogout, setConfirmLogout] = useState(false)
 
-    // Ref to detect clicks outside the avatar dropdown
+    
     const avatarRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     function handleLogoutConfirm(e: React.MouseEvent) {
         e.stopPropagation()
         setConfirmLogout(false)
-        // Call logout from auth context if available, then redirect
+       
         if (typeof logout === "function") logout()
         router.push("/login")
     }
@@ -61,14 +61,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const electionItems  = navItems.filter(i => i.section === "elections")
     const systemeItems   = navItems.filter(i => i.section === "systeme")
 
-    const initials = username?.slice(0, 2).toUpperCase() ?? "AD"
+    const initials = firstName?.slice(0, 2).toUpperCase() ?? "AD"
+    const name = firstName
     const isListActive = pathname.startsWith("/elections") || pathname.startsWith("/candidates")
 
     return (
         <div className="flex flex-col h-screen bg-gray-50">
-            {/* ── Top nav ── */}
+           
             <nav className="h-[52px] bg-[#F9423A] flex items-center justify-between px-5 flex-shrink-0 relative z-40">
-                {/* Logo */}
+             
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-0.5">
                         <div className="w-1 h-5 bg-white rounded-sm" />
@@ -83,14 +84,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     </div>
                 </div>
 
-                {/* Right side */}
+           
                 <div className="flex items-center gap-3">
                     <span className="flex items-center gap-1.5 text-white/80 text-xs">
                         <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                         Direct actif
                     </span>
 
-                    {/* Avatar with dropdown */}
+                   
                     <div
                         ref={avatarRef}
                         className="relative"
@@ -109,8 +110,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                     <div className="w-8 h-8 rounded-full bg-[#F9423A] flex items-center justify-center text-white text-xs font-medium mb-2">
                                         {initials}
                                     </div>
-                                    <p className="text-sm font-medium text-gray-800">{username ?? "Administrateur"}</p>
-                                    <p className="text-[11px] text-gray-400">Super Admin</p>
+                                    <p className="text-sm font-medium text-gray-800">{firstName ?? "Administrateur"}</p>
+                                    <p className="text-[11px] text-gray-400">{firstName}</p>
                                 </div>
                                 <div className="px-3 py-2">
                                     <button
@@ -130,15 +131,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </div>
             </nav>
 
-            {/* ── Logout confirmation modal ── */}
+       
             {confirmLogout && (
                 <div
                     className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center"
-                    onClick={handleLogoutCancel}   // click backdrop → cancel
+                    onClick={handleLogoutCancel}   
                 >
                     <div
                         className="bg-white rounded-xl shadow-xl p-6 w-80"
-                        onClick={e => e.stopPropagation()}  // prevent backdrop click from firing
+                        onClick={e => e.stopPropagation()}  
                     >
                         <p className="text-sm font-medium text-gray-800 mb-1">Déconnexion</p>
                         <p className="text-xs text-gray-400 mb-5">Voulez-vous vraiment vous déconnecter ?</p>
@@ -160,12 +161,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </div>
             )}
 
-            {/* ── Body ── */}
+            
             <div className="flex flex-1 overflow-hidden">
-                {/* Sidebar */}
+               
                 <aside className="w-[200px] bg-white border-r border-gray-100 flex-shrink-0 overflow-y-auto">
                     <div className="pt-3">
-                        {/* Principal */}
+                      
                         <p className="px-4 pb-1 text-[10px] font-medium text-gray-400 uppercase tracking-wide">Principal</p>
                         {principalItems.map(item => (
                             <div
@@ -180,10 +181,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                             </div>
                         ))}
 
-                        {/* Élections */}
+                       
                         <p className="px-4 pt-3 pb-1 text-[10px] font-medium text-gray-400 uppercase tracking-wide">Élections</p>
 
-                        {/* Listes sub-menu (hover) */}
+                       
                         <div
                             className="relative"
                             onMouseEnter={() => setListOpen(true)}
@@ -216,7 +217,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                             )}
                         </div>
 
-                        {/* Monitoring */}
+                     
                         {electionItems.map(item => (
                             <div
                                 key={item.href}
@@ -230,7 +231,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                             </div>
                         ))}
 
-                        {/* Système */}
+                    
                         <p className="px-4 pt-3 pb-1 text-[10px] font-medium text-gray-400 uppercase tracking-wide">Système</p>
                         {systemeItems.map(item => (
                             <div
@@ -247,7 +248,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     </div>
                 </aside>
 
-                {/* Main content */}
+            
                 <main className="flex-1 overflow-y-auto">
                     {children}
                 </main>
