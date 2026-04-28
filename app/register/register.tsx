@@ -6,52 +6,44 @@ import { useRouter } from "next/navigation"
 
 
 const Register = () => {
-    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [message, setMessage] = useState("")
     const [confirmedPass, setConfirmedPass] = useState("")
     const [nom, setNom] = useState("")
     const [prenom, setPrenom] = useState("")
     const [cin, setCin] = useState("")
-    const [telephone, setTelephone] = useState("")
     const routeur = useRouter()
-    const { registerUser } = RegisterAuthUseProvider()
+    const { registerAdmin, isLoading, error, clearError } = RegisterAuthUseProvider()
 
     const handleRegister = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
+        clearError();
+        
         if (password !== confirmedPass) {
             setMessage("mots de passe incorrect")
             return;
         }
         
+        if (!nom || !prenom || !cin || !password) {
+            setMessage("Tous les champs sont obligatoires")
+            return;
+        }
+        
         try {
-            const endpoint = "http://localhost:8080/api/register";
-            const response = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    username, 
-                    password, 
-                    nom, 
-                    prenom, 
-                    cin, 
-                    telephone 
-                }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setMessage(data.error || "Registration failed");
-                return;
-            }
-
-            registerUser(data.username, data.token);
-
-            setTimeout(() => routeur.push("/accueil"), 800);
+            const userData = {
+                firstName: prenom,
+                lastName: nom,
+                gid: cin,
+                password: password
+            };
+            
+            await registerAdmin(userData);
+            setMessage("Administrateur enregistré avec succès!");
+            
+            setTimeout(() => routeur.push("/login"), 2000);
         } catch (error) {
             console.error(error);
-            setMessage("Erreur serveur");
+            setMessage(error instanceof Error ? error.message : "Erreur serveur");
         }
     };
 
@@ -72,19 +64,9 @@ const Register = () => {
                         setPrenom(e.target.value)
                     }} />
                     
-                    <label htmlFor="">cin</label>
+                    <label htmlFor="">cin (GID)</label>
                     <input type="text" onChange={(e)=> {
                         setCin(e.target.value)
-                    }} />
-                    
-                    <label htmlFor="">telephone</label>
-                    <input type="text" onChange={(e)=> {
-                        setTelephone(e.target.value)
-                    }} />
-                    
-                    <label htmlFor="">username</label>
-                    <input type="text" onChange={(e)=> {
-                        setUsername(e.target.value)
                     }} />
                     
                     <label htmlFor="">entrer mots de passe</label>
@@ -98,9 +80,15 @@ const Register = () => {
                     }} />
                 </div>
                 
-                {message && <p>{message}</p>}
+                {(message || error) && (
+                    <p style={{ color: message.includes('succès') ? 'green' : 'red' }}>
+                        {message || error}
+                    </p>
+                )}
                 
-                <button type="submit">register</button>
+                <button type="submit" disabled={isLoading}>
+                    {isLoading ? 'Enregistrement...' : 'register'}
+                </button>
             </form>
         </div>
     )
