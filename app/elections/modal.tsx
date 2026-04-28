@@ -217,8 +217,8 @@ export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps)
                       placeholder="Entrez le CIN du candidat..."
                       className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00843D]/10 transition-all ${
                         cinError 
-                          ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/10" 
-                          : "border-slate-200 bg-white focus:border-[#00843D]"
+                          ? "border-red-300 bg-red-300 focus:border-red-500 focus:ring-red-500/10" 
+                          : "border-slate-400 bg-white focus:border-[#00843D]"
                       }`}
                       disabled={loading || searchingCin}
                     />
@@ -278,7 +278,7 @@ export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps)
                               }
                               if (errors.candidates) setErrors(prev => ({ ...prev, candidates: "" }));
                             }}
-                            className="rounded border-slate-300 text-[#00843D] focus:ring-[#00843D] focus:ring-offset-0 w-4 h-4"
+                            className="rounded border-slate-500 text-[#00843D] focus:ring-[#00843D] focus:ring-offset-0 w-4 h-4"
                             disabled={loading}
                           />
                           <div className="flex-1">

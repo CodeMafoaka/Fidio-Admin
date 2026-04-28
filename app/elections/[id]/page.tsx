@@ -94,7 +94,7 @@ export default function ElectionDetailPage() {
           <div className="flex items-center gap-3 mb-6">
             <button
               onClick={() => router.back()}
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              className="p-2 rounded-lg text-slate-600 hover:text-slate-700 hover:bg-slate-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -145,7 +145,7 @@ export default function ElectionDetailPage() {
 
       <div className="px-8 py-6 space-y-6">
         {/* Status and dates card */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
+        <div className="bg-white rounded-2xl border border-slate-400 p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
               <div className="flex items-center gap-3 mb-3">
@@ -154,8 +154,8 @@ export default function ElectionDetailPage() {
                   <span
                     className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
                       election.votesOpen
-                        ? "bg-emerald-50 text-emerald-700"
-                        : "bg-slate-100 text-slate-500"
+                        ? "bg-emerald-200 text-emerald-700"
+                        : "bg-slate-200 text-slate-600"
                     }`}
                   >
                     <span
@@ -232,7 +232,7 @@ export default function ElectionDetailPage() {
 
         {/* Statistics cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
+          <div className="bg-white rounded-2xl border border-slate-400 p-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-emerald-600" />
@@ -244,7 +244,7 @@ export default function ElectionDetailPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
+          <div className="bg-white rounded-2xl border border-slate-400 p-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-blue-600" />
@@ -256,7 +256,7 @@ export default function ElectionDetailPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
+          <div className="bg-white rounded-2xl border border-slate-400 p-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
                 <Clock className="w-5 h-5 text-amber-600" />
@@ -270,7 +270,7 @@ export default function ElectionDetailPage() {
         </div>
 
         {/* Candidates section */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
+        <div className="bg-white rounded-2xl border border-slate-400 p-6">
           
 
           <div className="space-y-3">
@@ -288,7 +288,7 @@ export default function ElectionDetailPage() {
                   <p className="text-sm text-slate-500">{candidate.percentage}%</p>
                 </div>
                 <div className="w-20">
-                  <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="w-full bg-slate-300 rounded-full h-2">
                     <div
                       className="bg-linear-to-r from-[#00843D] to-[#E8291E] h-2 rounded-full"
                       style={{ width: `${candidate.percentage}%` }}
