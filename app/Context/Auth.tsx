@@ -6,6 +6,7 @@ interface AuthContextType {
     username: string;
     loginUser: (username: string, token: string) => void;
     authUser: (username: string, token: string) => void;
+    logout: ()=> void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -30,8 +31,12 @@ export const UseProvider = ({ children }: { children: ReactNode }) => {
         setToken(token);
     };
 
+    const logout = ()=>{
+        localStorage.removeItem('username');
+        localStorage.removeItem('token')
+    }
     return (
-        <AuthContext.Provider value={{ loginUser, authUser, token, username }}>
+        <AuthContext.Provider value={{ loginUser, authUser, token, username , logout }}>
             {children}
         </AuthContext.Provider>
     );
