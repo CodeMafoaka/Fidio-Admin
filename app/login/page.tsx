@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AuthUseProvider } from "../Context/Auth"
 import { useRouter } from "next/navigation"
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -9,8 +9,13 @@ const Login = () => {
     const [password, setPassword] = useState("")
     const [message, setMessage] = useState("")
     const routeur = useRouter()
-    const { loginUser } = AuthUseProvider()
+    const { loginUser, token } = AuthUseProvider()
 
+    useEffect(() => {
+        if (token) {
+            routeur.replace("/dashboard")
+        }
+    }, [token, routeur])
 
     const handleLogin = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
@@ -22,19 +27,19 @@ const Login = () => {
             const response = await fetch(`${BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({gid: gid, password:password }),
+                body: JSON.stringify({ gid: gid, password: password }),
             })
-          
+
             if (!response.ok) {
-                const text = await response.text() 
+                const text = await response.text()
                 console.error("Server error response:", text)
                 setMessage(`Échec de connexion (${response.status})`)
                 return
             }
 
             const data = await response.json()
-            loginUser( data.token)
-            setTimeout(() => routeur.push("/page/dashboard"), 800)
+            loginUser(data.token)
+            setTimeout(() => routeur.push("/dashboard"), 800)
 
         } catch (error) {
             console.error(error)

@@ -59,6 +59,7 @@ export const UseProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = () => {
         localStorage.removeItem('token')
+        setToken("")
     }
     return (
         <AuthContext.Provider value={{ loginUser, authUser, token, logout , getMe , firstName , lastName , gid }}>
