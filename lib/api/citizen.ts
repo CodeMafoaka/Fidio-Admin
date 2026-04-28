@@ -85,6 +85,44 @@ export const citizenService = {
     }
   },
 
+  async getByGid(gid: string): Promise<Citizen | null> {
+    console.log("🔍 CITIZEN: Get by GID", { gid });
+    const token = localStorage.getItem("auth_token");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/citizens?gid=${gid}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: "Network error" }));
+        console.error("❌ CITIZEN: Get by GID failed", {
+          status: response.status,
+          errorData,
+          gid,
+        });
+        throw new Error(
+          errorData.message || `Get citizen by GID failed: ${response.status}`,
+        );
+      }
+
+      const data = await response.json();
+      console.log("✅ CITIZEN: Get by GID successful", {
+        found: data.length > 0,
+      });
+      return data.length > 0 ? data[0] : null; // Retourne le premier citoyen ou null
+    } catch (error) {
+      console.error("💥 CITIZEN: Get by GID network error", error);
+      throw error;
+    }
+  },
+
   async update(citizenData: UpdateCitizen): Promise<Citizen> {
     console.log("✏️ CITIZEN: Update citizen", {
       id: citizenData.id,

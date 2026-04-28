@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Search, SlidersHorizontal, Vote } from "lucide-react";
 import { Election, ElectionStatus } from "@/types";
+import { ElectionCandidate } from "@/types/api";
 import { Button, EmptyState } from "@/components/ui";
 import ElectionCard from "@/app/elections/card";
 import ElectionModal from "@/app/elections/modal";
 import PageHeader from "@/components/layout/PageHeader";
+import { electionService } from "@/lib/api/election";
 
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
@@ -63,10 +65,40 @@ const STATUS_FILTERS: { value: ElectionStatus | "all"; label: string }[] = [
 
 export default function ElectionsPage() {
   const router = useRouter();
-  const [elections, setElections] = useState<Election[]>(SEED);
+  const [elections, setElections] = useState<Election[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ElectionStatus | "all">("all");
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const fetchElections = async () => {
+      try {
+        const electionsData = await electionService.getAll();
+        // Convert API elections to local format
+        const formattedElections = electionsData.map((election) => ({
+          id: election.id,
+          title: election.title,
+          description: `Élection avec ${election.candidates.length} candidat(s)`,
+          startDate: election.startAt.split("T")[0],
+          endDate: election.endAt.split("T")[0],
+          status: new Date(election.startAt) > new Date() ? "draft" : new Date(election.endAt) < new Date() ? "completed" : "active" as ElectionStatus,
+          candidates: election.candidates.length,
+          votesOpen: new Date(election.startAt) <= new Date() && new Date(election.endAt) >= new Date(),
+          totalVotes: 0,
+          createdAt: election.createdAt.split("T")[0],
+        }));
+        setElections(formattedElections);
+      } catch (error) {
+        console.error("Failed to fetch elections:", error);
+        // Keep using seed data as fallback
+        setElections(SEED);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchElections();
+  }, []);
 
   // Derived stats
   const stats = useMemo(() => ({
@@ -89,21 +121,15 @@ export default function ElectionsPage() {
   );
 
   // Handlers
-  const handleCreate = async (data: { title: string; description: string; startDate: string; endDate: string }) => {
-    await new Promise((r) => setTimeout(r, 800));
-    const newElection: Election = {
-      id: Date.now().toString(),
-      ...data,
-      title: data.title.trim(),
-      description: data.description.trim(),
-      status: "draft",
-      candidates: 0,
-      votesOpen: false,
-      totalVotes: 0,
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-    setElections((prev) => [newElection, ...prev]);
-    setShowModal(false);
+  const handleCreate = async (data: { title: string; startAt: string; endAt: string; candidates: ElectionCandidate[] }) => {
+    try {
+      const newElection = await electionService.create(data);
+      setElections((prev) => [newElection, ...prev]);
+      setShowModal(false);
+    } catch (error) {
+      console.error("Failed to create election:", error);
+      throw error;
+    }
   };
 
   const updateStatus = (id: string, status: Election["status"]) =>
@@ -178,7 +204,11 @@ export default function ElectionsPage() {
 
         {/* Grid */}
         <div className="px-8 py-6">
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00843D]"></div>
+            </div>
+          ) : filtered.length === 0 ? (
             <EmptyState
               icon={<Vote className="w-8 h-8" />}
               title="Aucune élection trouvée"

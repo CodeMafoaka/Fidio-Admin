@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, Vote, Calendar, AlertTriangle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Vote, Calendar, AlertTriangle, Users, Plus } from "lucide-react";
 import { Field, fieldInputClass, Button } from "@/components/ui";
+import { citizenService } from "@/lib/api/citizen";
+import { Citizen, ElectionCandidate } from "@/types/api";
 
 interface ElectionFormData {
   title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
+  startAt: string;
+  endAt: string;
+  candidates: ElectionCandidate[];
 }
 
 interface ElectionModalProps {
@@ -20,27 +22,46 @@ function validate(data: ElectionFormData): Record<string, string> {
   const errors: Record<string, string> = {};
   if (!data.title.trim()) errors.title = "Le titre est requis";
   else if (data.title.trim().length < 3) errors.title = "Minimum 3 caractères";
-  if (!data.description.trim()) errors.description = "La description est requise";
-  else if (data.description.trim().length < 10) errors.description = "Minimum 10 caractères";
-  if (!data.startDate) errors.startDate = "Date de début requise";
-  if (!data.endDate) errors.endDate = "Date de fin requise";
-  else if (data.startDate && new Date(data.endDate) < new Date(data.startDate))
-    errors.endDate = "Doit être postérieure à la date de début";
+  if (!data.startAt) errors.startAt = "Date de début requise";
+  if (!data.endAt) errors.endAt = "Date de fin requise";
+  else if (data.startAt && new Date(data.endAt) < new Date(data.startAt))
+    errors.endAt = "Doit être postérieure à la date de début";
+  if (data.candidates.length < 2) errors.candidates = "Sélectionnez au moins 2 candidats";
   return errors;
 }
 
-const today = new Date().toISOString().split("T")[0];
+const today = new Date().toISOString().slice(0, 16);
 
 export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps) {
   const [data, setData] = useState<ElectionFormData>({
     title: "",
-    description: "",
-    startDate: "",
-    endDate: "",
+    startAt: "",
+    endAt: "",
+    candidates: [],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [citizens, setCitizens] = useState<Citizen[]>([]);
+  const [loadingCitizens, setLoadingCitizens] = useState(false);
+  const [cinInput, setCinInput] = useState("");
+  const [cinError, setCinError] = useState("");
+  const [searchingCin, setSearchingCin] = useState(false);
+
+  useEffect(() => {
+    const fetchCitizens = async () => {
+      setLoadingCitizens(true);
+      try {
+        const citizensData = await citizenService.getAll();
+        setCitizens(citizensData);
+      } catch (error) {
+        console.error("Failed to fetch citizens:", error);
+      } finally {
+        setLoadingCitizens(false);
+      }
+    };
+    fetchCitizens();
+  }, []);
 
   const set = (field: keyof ElectionFormData, value: string) => {
     setData((d) => ({ ...d, [field]: value }));
@@ -59,6 +80,41 @@ export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps)
       setSubmitError("Une erreur est survenue lors de la création.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddCinCandidate = async () => {
+    if (!cinInput.trim()) return;
+    
+    // Check if candidate already selected
+    const alreadySelected = data.candidates.some(c => c.gid === cinInput.trim());
+    if (alreadySelected) {
+      setCinError("Ce candidat est déjà sélectionné");
+      return;
+    }
+    
+    setSearchingCin(true);
+    setCinError("");
+    try {
+      const citizen = await citizenService.getByGid(cinInput.trim());
+      if (!citizen) {
+        setCinError("CIN non trouvé");
+      } else {
+        setData((prev) => ({
+          ...prev,
+          candidates: [...prev.candidates, {
+            gid: citizen.gid,
+            description: `${citizen.firstName} ${citizen.lastName}`
+          }]
+        }));
+        setCinInput("");
+        if (errors.candidates) setErrors(prev => ({ ...prev, candidates: "" }));
+      }
+    } catch (error) {
+      console.error("Failed to fetch citizen by CIN:", error);
+      setCinError("Erreur lors de la recherche du CIN");
+    } finally {
+      setSearchingCin(false);
     }
   };
 
@@ -118,43 +174,153 @@ export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps)
               />
             </Field>
 
-            <Field
-              label="Description"
-              error={errors.description}
-              icon={<Vote className="w-4 h-4" />}
-            >
-              <textarea
-                value={data.description}
-                onChange={(e) => set("description", e.target.value)}
-                placeholder="Décrivez l'objet et les règles de cette élection…"
-                className={fieldInputClass()}
-                rows={3}
-                disabled={loading}
-              />
-            </Field>
-
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Date de début" error={errors.startDate} icon={<Calendar className="w-4 h-4" />}>
+              <Field label="Date de début" error={errors.startAt} icon={<Calendar className="w-4 h-4" />}>
                 <input
-                  type="date"
-                  value={data.startDate}
-                  onChange={(e) => set("startDate", e.target.value)}
+                  type="datetime-local"
+                  value={data.startAt}
+                  onChange={(e) => set("startAt", e.target.value)}
                   min={today}
                   className={fieldInputClass()}
                   disabled={loading}
                 />
               </Field>
-              <Field label="Date de fin" error={errors.endDate} icon={<Calendar className="w-4 h-4" />}>
+              <Field label="Date de fin" error={errors.endAt} icon={<Calendar className="w-4 h-4" />}>
                 <input
-                  type="date"
-                  value={data.endDate}
-                  onChange={(e) => set("endDate", e.target.value)}
-                  min={data.startDate || today}
+                  type="datetime-local"
+                  value={data.endAt}
+                  onChange={(e) => set("endAt", e.target.value)}
+                  min={data.startAt || today}
                   className={fieldInputClass()}
                   disabled={loading}
                 />
               </Field>
             </div>
+
+            <Field
+              label="Candidats"
+              error={errors.candidates}
+              icon={<Users className="w-4 h-4" />}
+              hint="Sélectionnez au moins 2 candidats (CIN requis)"
+            >
+              {/* Manual CIN Input Section */}
+              <div className="mb-4 p-3 border border-dashed border-slate-300 rounded-lg bg-slate-50">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={cinInput}
+                      onChange={(e) => {
+                        setCinInput(e.target.value);
+                        setCinError("");
+                      }}
+                      placeholder="Entrez le CIN du candidat..."
+                      className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00843D]/10 transition-all ${
+                        cinError 
+                          ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/10" 
+                          : "border-slate-200 bg-white focus:border-[#00843D]"
+                      }`}
+                      disabled={loading || searchingCin}
+                    />
+                    {cinError && (
+                      <p className="text-xs text-red-600 mt-1">{cinError}</p>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    onClick={handleAddCinCandidate}
+                    disabled={!cinInput.trim() || loading || searchingCin}
+                    loading={searchingCin}
+                  >
+                    {searchingCin ? "Recherche..." : "Ajouter"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Existing Citizens List */}
+              {loadingCitizens ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#00843D]"></div>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-64 overflow-y-auto border border-slate-200 rounded-lg p-3">
+                  {citizens.length === 0 ? (
+                    <p className="text-sm text-slate-500 text-center py-4">
+                      Aucun citoyen disponible
+                    </p>
+                  ) : (
+                    citizens.map((citizen) => {
+                      const isSelected = data.candidates.some(c => c.gid === citizen.gid);
+                      return (
+                        <label
+                          key={citizen.id}
+                          className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors border border-slate-100"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setData(prev => ({
+                                  ...prev,
+                                  candidates: [...prev.candidates, {
+                                    gid: citizen.gid,
+                                    description: `${citizen.firstName} ${citizen.lastName}`
+                                  }]
+                                }));
+                              } else {
+                                setData(prev => ({
+                                  ...prev,
+                                  candidates: prev.candidates.filter(c => c.gid !== citizen.gid)
+                                }));
+                              }
+                              if (errors.candidates) setErrors(prev => ({ ...prev, candidates: "" }));
+                            }}
+                            className="rounded border-slate-300 text-[#00843D] focus:ring-[#00843D] focus:ring-offset-0 w-4 h-4"
+                            disabled={loading}
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-semibold text-slate-900">
+                                {citizen.firstName} {citizen.lastName}
+                              </p>
+                              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                                CIN: {citizen.gid}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-1">
+                              Carte d&apos;Identité Nationale: {citizen.gid}
+                            </p>
+                          </div>
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+              {data.candidates.length > 0 && (
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="text-sm">
+                    <span className="font-medium text-slate-900">{data.candidates.length}</span>
+                    <span className="text-slate-600 ml-1">
+                      candidat{data.candidates.length > 1 ? 's' : ''} sélectionné{data.candidates.length > 1 ? 's' : ''}
+                    </span>
+                    {data.candidates.length < 2 && (
+                      <span className="text-amber-600 ml-2 text-xs">
+                        (minimum 2 requis)
+                      </span>
+                    )}
+                  </div>
+                  {data.candidates.length >= 2 && (
+                    <span className="text-green-600 text-xs font-medium">
+                      ✓ Minimum requis atteint
+                    </span>
+                  )}
+                </div>
+              )}
+            </Field>
           </div>
 
           {/* Footer */}
