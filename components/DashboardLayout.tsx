@@ -66,9 +66,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
     return (
         <div className="flex flex-col h-screen bg-gray-50">
+
             {/* ── Top nav ── */}
             <nav className="h-[52px] bg-[#F9423A] flex items-center justify-between px-5 flex-shrink-0 relative z-40">
                 {/* Logo */}
+
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-0.5">
                         <div className="w-1 h-5 bg-white rounded-sm" />
@@ -146,14 +148,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                             <button
                                 onClick={handleLogoutCancel}
                                 className="text-xs px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+
                             >
                                 Annuler
                             </button>
                             <button
+
                                 onClick={handleLogoutConfirm}
                                 className="text-xs px-4 py-2 bg-[#F9423A] text-white rounded-lg hover:bg-red-600 transition-colors"
+
                             >
-                                Déconnecter
+                                Se déconnecter
                             </button>
                         </div>
                     </div>
@@ -162,8 +167,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* ── Body ── */}
             <div className="flex flex-1 overflow-hidden">
+
                 {/* Sidebar */}
                 <aside className="w-[200px] bg-white border-r border-gray-100 flex-shrink-0 overflow-y-auto">
+
                     <div className="pt-3">
                         {/* Principal */}
                         <p className="px-4 pb-1 text-[10px] font-medium text-gray-400 uppercase tracking-wide">Principal</p>
@@ -244,6 +251,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 {item.label}
                             </div>
                         ))}
+                        
+                        {/* Logout button */}
+                        <div className="pt-3 border-t border-gray-100 mt-3">
+                            <div
+                                onClick={() => setConfirmLogout(true)}
+                                className="flex items-center px-4 py-2.5 text-sm cursor-pointer border-l-2 transition-colors border-transparent text-red-600 hover:bg-red-50 hover:text-red-700">
+                                Déconnexion
+                            </div>
+                        </div>
                     </div>
                 </aside>
 
