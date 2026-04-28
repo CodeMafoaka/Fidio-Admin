@@ -127,16 +127,16 @@ export default function CreateCandidatePage() {
       }}
       className="w-full relative"
     >
-      {/* Decorative circles */}
+     
       <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full border border-[#00843D]/20 pointer-events-none" />
       <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full border border-[#00843D]/20 pointer-events-none" />
       <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full border border-[#00843D]/20 pointer-events-none" />
 
-      {/* Content */}
+
       <div className="relative z-10 flex justify-center px-4 py-10 sm:px-8">
         <div className="w-full max-w-[500px]">
 
-          {/* Mobile logo */}
+       
           <div className="flex lg:hidden items-center gap-3 mb-8 justify-center">
             <div className="w-9 h-9 bg-[#00843D] rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" />
@@ -144,7 +144,6 @@ export default function CreateCandidatePage() {
             <span className="font-bold text-xl text-gray-900 tracking-tight">Fidio Admin</span>
           </div>
 
-          {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
               <button
@@ -160,9 +159,9 @@ export default function CreateCandidatePage() {
             </p>
           </div>
 
-          {/* Form Card */}
+        
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden mb-6">
-            {/* Top accent */}
+          
             <div className="h-0.5 bg-gradient-to-r from-[#00843D] via-[#00843D] to-[#FC3D32]" />
 
             <div className="p-7">
@@ -173,7 +172,6 @@ export default function CreateCandidatePage() {
                   </div>
                 )}
 
-                {/* Photo Upload */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                     Photo du candidat
@@ -218,7 +216,6 @@ export default function CreateCandidatePage() {
                   )}
                 </div>
 
-                {/* Name Fields */}
                 <div className="grid grid-cols-2 gap-4">
                   <Field label="Prénom" error={formErrors.firstName} icon={<User className="w-4 h-4" />}>
                     <input
@@ -244,7 +241,6 @@ export default function CreateCandidatePage() {
                   </Field>
                 </div>
 
-                {/* Email */}
                 <Field label="Adresse email" error={formErrors.email} icon={<Mail className="w-4 h-4" />}>
                   <input
                     type="email"
@@ -257,7 +253,6 @@ export default function CreateCandidatePage() {
                   />
                 </Field>
 
-                {/* Phone */}
                 <Field label="Numéro de téléphone" error={formErrors.phone} icon={<Phone className="w-4 h-4" />}>
                   <input
                     type="tel"
@@ -270,7 +265,7 @@ export default function CreateCandidatePage() {
                   />
                 </Field>
 
-                {/* Election */}
+               
                 <Field label="Élection concernée" error={formErrors.electionId} icon={<FileText className="w-4 h-4" />}>
                   <select
                     name="electionId"
@@ -286,7 +281,7 @@ export default function CreateCandidatePage() {
                   </select>
                 </Field>
 
-                {/* Bio */}
+              
                 <Field label="Biographie" error={formErrors.bio} icon={<FileText className="w-4 h-4" />}>
                   <textarea
                     name="bio"
@@ -299,7 +294,6 @@ export default function CreateCandidatePage() {
                   />
                 </Field>
 
-                {/* Submit */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -321,7 +315,7 @@ export default function CreateCandidatePage() {
                   )}
                 </button>
 
-                {/* Cancel */}
+               
                 <button
                   type="button"
                   onClick={() => window.history.back()}

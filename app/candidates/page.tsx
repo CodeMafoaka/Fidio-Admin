@@ -149,7 +149,7 @@ export default function CandidatesPage() {
       <div className="flex-1 flex flex-col px-4 py-10 sm:px-8">
         <div className="w-full max-w-6xl mx-auto">
 
-          {/* Mobile logo */}
+          
           <div className="flex lg:hidden items-center gap-3 mb-8 justify-center">
             <div className="w-9 h-9 bg-[#00843D] rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" />
@@ -157,7 +157,7 @@ export default function CandidatesPage() {
             <span className="font-bold text-xl text-gray-900 tracking-tight">Fidio Admin</span>
           </div>
 
-          {/* Header */}
+          
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-1">Candidats</h1>
@@ -176,10 +176,10 @@ export default function CandidatesPage() {
             </a>
           </div>
 
-          {/* Filters */}
+          
           <div className="bg-white rounded-xl shadow-sm border border-gray-200/80 p-4 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Search */}
+              
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
@@ -191,7 +191,7 @@ export default function CandidatesPage() {
                 />
               </div>
 
-              {/* Status filter */}
+              
               <div className="relative">
                 <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <select
