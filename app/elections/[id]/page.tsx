@@ -134,11 +134,11 @@ export default function ElectionDetailPage() {
             >
               Retour
             </Button>
-            <Button
+            {/* <Button
               icon={<Edit className="w-4 h-4" />}
             >
               Modifier
-            </Button>
+            </Button> */}
           </div>
         }
       />
@@ -271,15 +271,7 @@ export default function ElectionDetailPage() {
 
         {/* Candidates section */}
         <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-slate-900">Candidats</h2>
-            <Button
-              size="sm"
-              icon={<Plus className="w-4 h-4" />}
-            >
-              Ajouter un candidat
-            </Button>
-          </div>
+          
 
           <div className="space-y-3">
             {candidates.map((candidate, index) => (
