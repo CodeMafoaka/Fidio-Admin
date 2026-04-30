@@ -123,8 +123,23 @@ export default function ElectionsPage() {
   // Handlers
   const handleCreate = async (data: { title: string; startAt: string; endAt: string; candidates: ElectionCandidate[] }) => {
     try {
-      const newElection = await electionService.create(data);
-      setElections((prev) => [newElection, ...prev]);
+      const apiElection = await electionService.create(data);
+      
+      // Transform API election to local format
+      const formattedElection: Election = {
+        id: apiElection.id,
+        title: apiElection.title,
+        description: "", // API doesn't return description, set empty for now
+        startDate: apiElection.startAt,
+        endDate: apiElection.endAt,
+        status: "draft", // Default status for new elections
+        candidates: apiElection.candidates.length,
+        votesOpen: false, // Default for new elections
+        totalVotes: 0, // Default for new elections
+        createdAt: apiElection.createdAt,
+      };
+      
+      setElections((prev) => [formattedElection, ...prev]);
       setShowModal(false);
     } catch (error) {
       console.error("Failed to create election:", error);
