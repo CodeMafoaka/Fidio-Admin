@@ -91,6 +91,7 @@ export default function ElectionsPage() {
   // Handlers
   const handleCreate = async (data: { title: string; startAt: string; endAt: string; candidates: ElectionCandidate[] }) => {
     try {
+
       const newElection = await electionService.create(data);
       const formattedElection = {
         id: newElection.id,
@@ -104,6 +105,7 @@ export default function ElectionsPage() {
         totalVotes: 0,
         createdAt: newElection.createdAt.split("T")[0],
       };
+
       setElections((prev) => [formattedElection, ...prev]);
       setShowModal(false);
     } catch (error) {
