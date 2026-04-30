@@ -32,6 +32,19 @@ function validate(data: ElectionFormData): Record<string, string> {
 
 const today = new Date().toISOString().slice(0, 16);
 
+// Format date with seconds and timezone for API compatibility
+const formatDateTimeWithSeconds = (dateString: string): string => {
+  if (!dateString) return dateString;
+  
+  // Convert datetime-local (YYYY-MM-DDTHH:mm) to ISO format with seconds and timezone
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+  
+  // Add seconds and timezone offset (+00:00 for UTC)
+  const isoString = date.toISOString();
+  return isoString;
+};
+
 export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps) {
   const [data, setData] = useState<ElectionFormData>({
     title: "",
@@ -75,7 +88,13 @@ export default function ElectionModal({ onClose, onSubmit }: ElectionModalProps)
     setLoading(true);
     setSubmitError("");
     try {
-      await onSubmit(data);
+      // Format dates for API compatibility
+      const formattedData = {
+        ...data,
+        startAt: formatDateTimeWithSeconds(data.startAt),
+        endAt: formatDateTimeWithSeconds(data.endAt),
+      };
+      await onSubmit(formattedData);
     } catch {
       setSubmitError("Une erreur est survenue lors de la création.");
     } finally {

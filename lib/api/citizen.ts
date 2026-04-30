@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const citizenService = {
   async getAll(gid?: string, id?: string): Promise<Citizen[]> {
     console.log("👥 CITIZEN: Get all citizens", { gid, id });
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
     const params = new URLSearchParams();
     if (gid) params.append("gid", gid);
@@ -51,7 +51,7 @@ export const citizenService = {
       gid: citizenData.gid,
       firstName: citizenData.firstName,
     });
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(`${API_BASE_URL}/citizens`, {
@@ -128,7 +128,7 @@ export const citizenService = {
       id: citizenData.id,
       firstName: citizenData.firstName,
     });
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(`${API_BASE_URL}/citizens`, {
