@@ -137,7 +137,7 @@ export default function Dashboard() {
                         <p className="text-xs text-gray-400">cycle actuel</p>
                     </div>
                     <div className="h-44">
-                        <Bar data={chartData as any} options={{
+                        <Bar data={chartData} options={{
                             responsive: true, maintainAspectRatio: false,
                             plugins: { legend: { display: false } },
                             scales: {

@@ -145,7 +145,7 @@ export default function ElectionDetailPage() {
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00843D] mx-auto mb-4"></div>
-            <p className="text-slate-500">Chargement des détails de l'élection...</p>
+            <p className="text-slate-500">Chargement des détails de l&apos;élection...</p>
           </div>
         </div>
       </div>

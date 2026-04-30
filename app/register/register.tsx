@@ -400,7 +400,7 @@ function Register() {
 
           <p className="text-center text-xs text-slate-400 mt-6">
             En créant un compte, vous acceptez les{" "}
-            <a href="#" className="underline hover:text-slate-600">conditions d'utilisation</a>{" "}
+            <a href="#" className="underline hover:text-slate-600">conditions d&apos;utilisation</a>{" "}
             de Fidio.
           </p>
         </div>
