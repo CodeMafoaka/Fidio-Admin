@@ -34,7 +34,7 @@ const Login = () => {
 
             const data = await response.json()
             loginUser( data.token)
-            setTimeout(() => routeur.push("/page/dashboard"), 800)
+            setTimeout(() => routeur.push("/dashboard"), 800)
 
         } catch (error) {
             console.error(error)
