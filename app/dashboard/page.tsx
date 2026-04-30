@@ -1,11 +1,16 @@
 "use client"
-import { Chart } from "react-chartjs-2"
-import {
-    Chart as ChartJS, CategoryScale, LinearScale,
-    BarElement, LineElement, PointElement, Tooltip
-} from "chart.js"
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip)
+export default function Dashboard() {
+    return (
+        <div className="p-4">
+            <h1 className="text-2xl font-bold">Dashboard Test</h1>
+            <p>Si vous voyez cette page, le problème vient du dashboard complexe.</p>
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded">
+                <p>✅ Page chargée avec succès</p>
+            </div>
+        </div>
+    )
+}
 
 const elections = [
     { id: 1, name: "Présidentielle 2025", dates: "12–14 mai 2025", status: "live", participation: 71 },
@@ -67,6 +72,25 @@ const chartData = {
 }
 
 export default function Dashboard() {
+    const [hasError, setHasError] = useState(false)
+
+    if (hasError) {
+        return (
+            <div className="p-4">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                    <h2 className="text-lg font-medium text-red-800 mb-2">Erreur de chargement</h2>
+                    <p className="text-sm text-red-600 mb-4">Une erreur est survenue lors du chargement du dashboard.</p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                        Recharger la page
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="p-4 space-y-4">
             {/* Stats cards */}
@@ -130,21 +154,14 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Chart */}
+                {/* Chart - Temporarily disabled for debugging */}
                 <div className="bg-white border border-gray-100 rounded-xl p-4">
                     <div className="mb-3">
                         <h2 className="text-sm font-medium text-gray-800">Participation par région</h2>
                         <p className="text-xs text-gray-400">cycle actuel</p>
                     </div>
-                    <div className="h-44">
-                        <Chart type="bar" data={chartData} options={{
-                            responsive: true, maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-                                y: { min: 0, max: 100, ticks: { callback: (v: string | number) => v + "%", stepSize: 25, font: { size: 10 } }, grid: { color: "rgba(0,0,0,0.05)" } }
-                            }
-                        }} />
+                    <div className="h-44 flex items-center justify-center bg-gray-50 rounded-lg">
+                        <p className="text-sm text-gray-500">Graphique temporairement désactivé</p>
                     </div>
                     <div className="flex gap-4 mt-2 text-[11px] text-gray-500">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#00843D]" />Participation</span>

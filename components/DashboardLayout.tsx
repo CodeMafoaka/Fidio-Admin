@@ -24,19 +24,45 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const router   = useRouter()
     const pathname = usePathname()
 
+    // Add error boundary - must be called before any conditional returns
+    const [hasError, setHasError] = useState(false)
+    const [listOpen, setListOpen] = useState(false)
+    const [avatarOpen, setAvatarOpen] = useState(false)
+    const [confirmLogout, setConfirmLogout] = useState(false)
+    const avatarRef = useRef<HTMLDivElement>(null)
+
     // Redirect to login if not authenticated
     useEffect(() => {
-        if (!token) {
-            router.push("/login")
+        try {
+            // Only redirect if token is empty string (not just falsy)
+            if (token === "") {
+                console.log("No token found, redirecting to login")
+                router.push("/login")
+            } else {
+                console.log("Token found, user authenticated")
+            }
+        } catch (error) {
+            console.error("Error in auth check:", error)
+            setTimeout(() => setHasError(true), 0)
         }
     }, [token, router])
 
-    const [listOpen,      setListOpen]      = useState(false)
-    const [avatarOpen,    setAvatarOpen]    = useState(false)
-    const [confirmLogout, setConfirmLogout] = useState(false)
-
-    
-    const avatarRef = useRef<HTMLDivElement>(null)
+    if (hasError) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="bg-white rounded-xl p-6 text-center max-w-md">
+                    <h2 className="text-lg font-medium text-red-800 mb-2">Erreur de chargement</h2>
+                    <p className="text-sm text-red-600 mb-4">Une erreur est survenue dans le layout du dashboard.</p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                        Recharger la page
+                    </button>
+                </div>
+            </div>
+        )
+    }
 
     useEffect(() => {
         if (!avatarOpen) return
