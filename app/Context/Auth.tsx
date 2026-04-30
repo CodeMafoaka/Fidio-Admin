@@ -12,7 +12,7 @@ interface AuthContextType {
     lastName : string,
     gid: string,
 }
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -27,6 +27,11 @@ export const UseProvider = ({ children }: { children: ReactNode }) => {
     const [gid, setGid] = useState("");
 
     const getMe = async () => {
+        if (!token) {
+            console.log("No token available for getMe")
+            return
+        }
+        
         try {
             const res = await fetch(`${BASE_URL}/auth/me`, {
                 method: 'GET',
@@ -36,13 +41,17 @@ export const UseProvider = ({ children }: { children: ReactNode }) => {
                 },
             })
 
-            const data = await res.json()
-            setFirstName(data.firstName)
-            setLastName(data.lastName)
-            setGid(data.gid)
-        } catch (error) {
-            console.log(error);
+            if (!res.ok) {
+                console.error("Failed to fetch user data:", res.status)
+                return
+            }
 
+            const data = await res.json()
+            setFirstName(data.firstName || "")
+            setLastName(data.lastName || "")
+            setGid(data.gid || "")
+        } catch (error) {
+            console.error("Error in getMe:", error);
         }
     }
 

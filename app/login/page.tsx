@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { AuthUseProvider } from "../Context/Auth"
 import { useRouter } from "next/navigation"
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const Login = () => {
     const [gid, setGid] = useState("")
