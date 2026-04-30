@@ -46,7 +46,7 @@ export const electionService = {
 
   async create(electionData: CreateElection): Promise<Election> {
     console.log("➕ ELECTION: Create election", { title: electionData.title });
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(`${API_BASE_URL}/elections`, {
@@ -84,7 +84,7 @@ export const electionService = {
 
   async getById(id: string): Promise<Election> {
     console.log("🔍 ELECTION: Get by ID", { electionId: id });
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(`${API_BASE_URL}/elections/${id}`, {
@@ -120,7 +120,7 @@ export const electionService = {
 
   async getResult(electionId: string): Promise<ElectionResult> {
     console.log("📊 ELECTION: Get result", { electionId });
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(
