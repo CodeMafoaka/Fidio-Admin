@@ -11,48 +11,6 @@ import ElectionModal from "@/app/elections/modal";
 import PageHeader from "@/components/layout/PageHeader";
 import { electionService } from "@/lib/api/election";
 
-// ─── Seed data ────────────────────────────────────────────────────────────────
-
-const SEED: Election[] = [
-  {
-    id: "1",
-    title: "Élection du Conseil Étudiant 2024",
-    description: "Vote pour élire les nouveaux membres du conseil étudiant",
-    startDate: "2024-05-01",
-    endDate: "2024-05-15",
-    status: "active",
-    candidates: 8,
-    votesOpen: true,
-    totalVotes: 156,
-    createdAt: "2024-04-10",
-  },
-  {
-    id: "2",
-    title: "Élection du Délégué de Classe",
-    description: "Choix du délégué pour la promotion 2024-2025",
-    startDate: "2024-06-01",
-    endDate: "2024-06-03",
-    status: "draft",
-    candidates: 5,
-    votesOpen: false,
-    totalVotes: 0,
-    createdAt: "2024-04-18",
-  },
-  {
-    id: "3",
-    title: "Élection du Représentant Sportif",
-    description: "Sélection du représentant des activités sportives universitaires",
-    startDate: "2024-03-15",
-    endDate: "2024-03-20",
-    status: "completed",
-    candidates: 3,
-    votesOpen: false,
-    totalVotes: 89,
-    createdAt: "2024-03-01",
-  },
-];
-
-// ─── Filter bar ───────────────────────────────────────────────────────────────
 
 const STATUS_FILTERS: { value: ElectionStatus | "all"; label: string }[] = [
   { value: "all", label: "Toutes" },
@@ -61,7 +19,6 @@ const STATUS_FILTERS: { value: ElectionStatus | "all"; label: string }[] = [
   { value: "completed", label: "Terminées" },
 ];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ElectionsPage() {
   const router = useRouter();
@@ -75,24 +32,35 @@ export default function ElectionsPage() {
     const fetchElections = async () => {
       try {
         const electionsData = await electionService.getAll();
-        // Convert API elections to local format
-        const formattedElections = electionsData.map((election) => ({
-          id: election.id,
-          title: election.title,
-          description: `Élection avec ${election.candidates.length} candidat(s)`,
-          startDate: election.startAt.split("T")[0],
-          endDate: election.endAt.split("T")[0],
-          status: new Date(election.startAt) > new Date() ? "draft" : new Date(election.endAt) < new Date() ? "completed" : "active" as ElectionStatus,
-          candidates: election.candidates.length,
-          votesOpen: new Date(election.startAt) <= new Date() && new Date(election.endAt) >= new Date(),
-          totalVotes: 0,
-          createdAt: election.createdAt.split("T")[0],
-        }));
+        // Convert API elections to local format and fetch vote counts
+        const formattedElections = await Promise.all(
+          electionsData.map(async (election) => {
+            let totalVotes = 0;
+            try {
+              const result = await electionService.getResult(election.id);
+              totalVotes = result.totalVote;
+            } catch (error) {
+              console.warn(`Failed to fetch results for election ${election.id}:`, error);
+            }
+            
+            return {
+              id: election.id,
+              title: election.title,
+              description: `Élection avec ${election.candidates.length} candidat(s)`,
+              startDate: election.startAt.split("T")[0],
+              endDate: election.endAt.split("T")[0],
+              status: new Date(election.startAt) > new Date() ? "draft" : new Date(election.endAt) < new Date() ? "completed" : "active" as ElectionStatus,
+              candidates: election.candidates.length,
+              votesOpen: new Date(election.startAt) <= new Date() && new Date(election.endAt) >= new Date(),
+              totalVotes,
+              createdAt: election.createdAt.split("T")[0],
+            };
+          })
+        );
         setElections(formattedElections);
       } catch (error) {
         console.error("Failed to fetch elections:", error);
-        // Keep using seed data as fallback
-        setElections(SEED);
+        setElections([]);
       } finally {
         setLoading(false);
       }
@@ -123,22 +91,21 @@ export default function ElectionsPage() {
   // Handlers
   const handleCreate = async (data: { title: string; startAt: string; endAt: string; candidates: ElectionCandidate[] }) => {
     try {
-      const apiElection = await electionService.create(data);
-      
-      // Transform API election to local format
-      const formattedElection: Election = {
-        id: apiElection.id,
-        title: apiElection.title,
-        description: "", // API doesn't return description, set empty for now
-        startDate: apiElection.startAt,
-        endDate: apiElection.endAt,
-        status: "draft", // Default status for new elections
-        candidates: apiElection.candidates.length,
-        votesOpen: false, // Default for new elections
-        totalVotes: 0, // Default for new elections
-        createdAt: apiElection.createdAt,
+
+      const newElection = await electionService.create(data);
+      const formattedElection = {
+        id: newElection.id,
+        title: newElection.title,
+        description: `Élection avec ${newElection.candidates.length} candidat(s)`,
+        startDate: newElection.startAt.split("T")[0],
+        endDate: newElection.endAt.split("T")[0],
+        status: new Date(newElection.startAt) > new Date() ? "draft" : new Date(newElection.endAt) < new Date() ? "completed" : "active" as ElectionStatus,
+        candidates: newElection.candidates.length,
+        votesOpen: new Date(newElection.startAt) <= new Date() && new Date(newElection.endAt) >= new Date(),
+        totalVotes: 0,
+        createdAt: newElection.createdAt.split("T")[0],
       };
-      
+
       setElections((prev) => [formattedElection, ...prev]);
       setShowModal(false);
     } catch (error) {
@@ -194,7 +161,7 @@ export default function ElectionsPage() {
               placeholder="Rechercher une élection…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#00843D] focus:ring-2 focus:ring-[#00843D]/10 transition-all"
+              className="w-full pl-9 pr-4 py-2 text-sm border border-slate-700 rounded-xl bg-white focus:outline-none focus:border-[#00843D] focus:ring-2 focus:ring-[#00843D]/10 transition-all"
             />
           </div>
 
@@ -208,7 +175,7 @@ export default function ElectionsPage() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   statusFilter === f.value
                     ? "bg-[#00843D] text-white"
-                    : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                    : "bg-white border border-slate-700 text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 {f.label}
