@@ -24,6 +24,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const router   = useRouter()
     const pathname = usePathname()
 
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!token) {
+            router.push("/login")
+        }
+    }, [token, router])
+
     const [listOpen,      setListOpen]      = useState(false)
     const [avatarOpen,    setAvatarOpen]    = useState(false)
     const [confirmLogout, setConfirmLogout] = useState(false)

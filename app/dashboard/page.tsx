@@ -1,5 +1,5 @@
 "use client"
-import { Bar } from "react-chartjs-2"
+import { Chart } from "react-chartjs-2"
 import {
     Chart as ChartJS, CategoryScale, LinearScale,
     BarElement, LineElement, PointElement, Tooltip
@@ -137,7 +137,7 @@ export default function Dashboard() {
                         <p className="text-xs text-gray-400">cycle actuel</p>
                     </div>
                     <div className="h-44">
-                        <Bar data={chartData as any} options={{
+                        <Chart type="bar" data={chartData as any} options={{
                             responsive: true, maintainAspectRatio: false,
                             plugins: { legend: { display: false } },
                             scales: {

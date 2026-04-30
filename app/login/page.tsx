@@ -9,7 +9,7 @@ const Login = () => {
     const [password, setPassword] = useState("")
     const [message, setMessage] = useState("")
     const routeur = useRouter()
-    const { loginUser } = AuthUseProvider()
+    const { loginUser, getMe } = AuthUseProvider()
 
 
     const handleLogin = async (e: { preventDefault: () => void }) => {
@@ -34,7 +34,9 @@ const Login = () => {
 
             const data = await response.json()
             loginUser( data.token)
-            setTimeout(() => routeur.push("/page/dashboard"), 800)
+            // Fetch user data after successful login
+            await getMe()
+            setTimeout(() => routeur.push("/dashboard"), 800)
 
         } catch (error) {
             console.error(error)
